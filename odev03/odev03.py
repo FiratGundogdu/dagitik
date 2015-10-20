@@ -1,14 +1,9 @@
 __author__ = 'firatlepirate'
 
+
 alfabe = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 
-
-'''input_str = raw_input("Give me a word: ")
-print input_str
-print type(input_str)'''
-
-
-alfabe_key = input("Give me number: ")
+alfabe_key = input("Give me a number to make new alphabet: ")
 alfabe_cryt=[0]*26
 
 for i in range(len(alfabe)):
@@ -19,7 +14,9 @@ print (alfabe)
 print alfabe_cryt
 
 
-text = "lorem ipsum dolor sit amet"
+file = open('metin.txt', 'r')
+text = file.read()
+text=text.lower()
 text_crypt = ""
 
 for i in range(len(text)):
@@ -28,4 +25,8 @@ for i in range(len(text)):
     else:
         text_crypt = text_crypt + text[i]
 
-print text_crypt
+file_name= "crypted_<%d>.txt" %(alfabe_key)
+print file_name
+file = open(file_name,'w')
+file.write(text_crypt)
+file.close()
