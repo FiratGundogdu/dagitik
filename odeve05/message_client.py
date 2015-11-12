@@ -91,7 +91,25 @@ class ReadThread (threading.Thread):
 
 
 class WriteThread (threading.Thread):
-  ..
+    def __init__(self, name, csoc, threadQueue):
+        threading.Thread.__init__(self)
+        self.name = name
+        self.csoc = csoc
+        self.threadQueue = threadQueue
+    def run(self):
+         while True:
+             if self.threadQueue.qsize() > 0:
+                 queue_message = self.threadQueue.get()
+                 try:
+                     #self.csoc.send(queue_message)
+                     print("Queuue :"+ queue_message)
+                     self.csoc.send(str(queue_message))
+                     if queue_message=="QUIT":
+                         break
+                 except socket.error:
+                     self.csoc.close()
+                     break
+
 
 
 class ClientDialog(QDialog):
