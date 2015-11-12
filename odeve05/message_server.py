@@ -200,7 +200,29 @@ class ReadThread (threading.Thread):
         print(threading.activeCount())
 
 class LoggerThread (threading.Thread):
- 
+    def __init__(self, name, logQueue, logFileName):
+        threading.Thread.__init__(self)
+        self.name = name
+        self.lQueue = logQueue
+        self.fileName=logFileName
+    # dosyayi appendable olarak ac
+        self.fid = open(self.fileName, "a")
+    def log(self,message):
+    # gelen mesaji zamanla beraber bastir
+        t = time.ctime()
+        self.fid.write(t+":"+" "+ message+"\n")
+        self.fid.flush()
+    def run(self):
+        self.log("Starting " + self.name)
+        while True:
+            if self.lQueue.qsize() > 0:
+                # lQueue'da yeni mesaj varsa
+                # self.log() metodunu cagir
+                to_be_logged =  self.lQueue.get()
+                self.log(to_be_logged)
+        self.log("Exiting" + self.name)
+        self.fid.close()
+
 userList={}
 
 
