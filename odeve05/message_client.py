@@ -8,6 +8,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import Queue
 import time
+import re
+
+
 class ReadThread (threading.Thread):
     def __init__(self, name, csoc, threadQueue, app):
         threading.Thread.__init__(self)
@@ -68,7 +71,7 @@ class ReadThread (threading.Thread):
 
         if data[0:3] == "SYS":
             if not rest == self.nickname:
-                self.app.cprint("-Server-"+rest+" "+"has joined")
+                self.app.cprint("-Server- "+rest+" "+"has joined")
             print("SYS")
         if data[0:3] == "LSA":
             splitted = rest.split(":")
@@ -167,8 +170,10 @@ class ClientDialog(QDialog):
                     self.threadQueue.put("TIC")
 
                 elif command == "msg":
-                    data2=data[data.indexOf(" ")+1:data.lastIndexOf(" ")]
-                    message=data[data.lastIndexOf(" ")+1:]
+                    space = [m.start() for m in re.finditer(" ", data)]
+                    
+                    data2=data[space[0]+1:space[1]]
+                    message=data[space[1]+1:]
                     self.threadQueue.put(str("MSG "+data2+":"+message))
                     print("MSG "+data2+":"+message)
                 else:
