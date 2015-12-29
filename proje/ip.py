@@ -72,6 +72,67 @@ class WorkerThread (threading.Thread):
                 #     newMessage[index0] = 0
         return (header, newMessage)
 
+    def filterBinarize(self,header,patch):
+
+        newmessage = [0]*self.patchsize*self.patchsize
+        for i in range (self.patchsize*self.patchsize):
+            if (patch[i]>=127):
+                newmessage[i] = 255;
+            else:
+                newmessage[i] = 0;
+        return (header,newmessage)
+
+    def filterGaussian(self,header,patch):
+         newmessage = [0]*self.patchsize*self.patchsize
+         for i in range(1, self.patchsize-1):
+            for j in range(1, self.patchsize-1):
+                index0 = j * self.patchsize + i # top line index
+                index1 = (j+1) * self.patchsize + i # same line index
+                index1r = (j-1) * self.patchsize + i # bottom line index
+                newmessage[index0] = \
+                    + 1* patch[index1r - 1] \
+                    + 2* patch[index1r ] \
+                    + 1* patch[index1r + 1] \
+                    + 2* patch[index0 - 1] \
+                    + 4* patch[index0 ] \
+                    + 2* patch[index0 + 1] \
+                    + 1* patch[index1 - 1] \
+                    + 2* patch[index1 ] \
+                    + 1* patch[index1 + 1]
+
+                newmessage[index0] = int(newmessage[index0]/16)
+         return (header,newmessage)
+
+    def filterPrewitt(self, header, patch, threshold):
+
+        newMessage = [0] * self.patchsize * self.patchsize
+        for i in range(1, self.patchsize-1):
+            for j in range(1, self.patchsize-1):
+                index0 = j * self.patchsize + i # top line index
+                index1 = (j+1) * self.patchsize + i # same line index
+                index1r = (j-1) * self.patchsize + i # bottom line index
+                temp0 = \
+                    + 1* patch[index1r - 1] \
+                    - 1* patch[index1r + 1] \
+                    + 1* patch[index0 - 1] \
+                    - 1* patch[index0 + 1] \
+                    + 1* patch[index1 - 1] \
+                    - 1* patch[index1 + 1]
+
+                temp1 = \
+                    - 1* patch[index1r - 1] \
+                    - 1* patch[index1r]\
+                    - 1* patch[index1r + 1] \
+                    + 1* patch[index1 - 1] \
+                    + 1* patch[index1]\
+                    + 1* patch[index1 + 1]
+
+                newMessage[index0] = int(math.sqrt(temp0**2 + temp1**2))
+
+        return (header, newMessage)
+
+
+
 
     def run(self):
         print self.name + ": Starting."
